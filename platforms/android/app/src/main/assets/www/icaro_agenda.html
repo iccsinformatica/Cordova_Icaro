@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"-->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+        content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover, height=device-height">
+    <meta name="color-scheme" content="light dark">
+
+    <link rel="stylesheet" href="/css/icaro.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <script src="./cordova.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/icaro.js"></script>
+
+    <style>
+        .container {
+            margin: 0% 5% 0% 5%;
+        }
+    </style>
+
+    <title>Icaro Evo</title>
+</head>
+
+<body>
+
+    <div class="div_header" id="div_header_small"></div>
+
+    <div id='calendar'></div>
+
+</body>
+
+</html>
+<script>
+      document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            getHeader();
+        }
+     // prep some variables
+    var startDate = new Date(2015,2,15,18,30,0,0,0); // beware: month 0 = january, 11 = december
+    var endDate = new Date(2015,2,15,19,30,0,0,0);
+    var title = "My nice event";
+    var eventLocation = "Home";
+    var notes = "Some notes about this event.";
+    var success = function(message) { alert("Success: " + JSON.stringify(message)); };
+    var error = function(message) { alert("Error: " + message); };
+
+    window.plugins.calendar.createEvent(title,eventLocation,notes,startDate,endDate,success,error);
+    
+// create an event silently (on Android < 4 an interactive dialog is shown which doesn't use this options) with options:
+    var calOptions = window.plugins.calendar.getCalendarOptions(); // grab the defaults
+    calOptions.firstReminderMinutes = 120; // default is 60, pass in null for no reminder (alarm)
+    calOptions.secondReminderMinutes = 5;
+
+    // Added these options in version 4.2.4:
+    calOptions.recurrence = "monthly"; // supported are: daily, weekly, monthly, yearly
+    calOptions.recurrenceEndDate = new Date(2016,10,1,0,0,0,0,0); // leave null to add events into infinity and beyond
+    calOptions.calendarName = "MyCreatedCalendar"; // iOS only
+    calOptions.calendarId = 1; // Android only, use id obtained from listCalendars() call which is described below. This will be ignored on iOS in favor of calendarName and vice versa. Default: 1.
+
+
+</script>
+

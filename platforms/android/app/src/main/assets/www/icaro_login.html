@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+    <!--
+        Customize this policy to fit your own app's needs. For more guidance, please refer to the docs:
+            https://cordova.apache.org/docs/en/latest/
+        Some notes:
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"-->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+
+
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/icaro.css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./css/fontawesome.css">
+    <link rel="stylesheet" href="./css/fontawesome.min.css">
+
+    <script src="./cordova.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/icaro.js"></script>
+
+    <title>Icaro Evo</title>
+</head>
+
+<body>
+
+    <div class="page-content" id="container" style="text-align: center;">
+
+        <div id="div_login" style="text-align: center; margin-top: 20%;">
+            <div class="input-style input-style-1 input-required" id="logo">
+                <img style="width: 20%;" src="./img/logo_maggioli.png" alt="">
+            </div>
+
+            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="div_select_profili"
+                name="div_select_profili">
+
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idservizio"
+                    name="idservizio">
+                    <option value="0" selected>Seleziona il servizio</option>
+                </select>
+                <div style="padding-right: 10%; padding-left: 10%;">
+                    <div class="row row_button" style="margin-top: 10%;">
+                        <div class="col-12 pl-1 pr-1">
+                            <div class="btn btn-outline-primary" onclick="continua()"><b>Continua</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="select_idente"
+                name="select_idente">
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idente"
+                    name="idente">
+                    <option value="0" selected>Seleziona l'ambito</option>
+                </select>
+            </div>
+
+            <div id="div_accesso_credenziali" style="display: none;">
+                <br>
+                <div class="input-style input-style-1 input-required" style=" padding-left: 10%; padding-right: 10%;">
+                    <span class="color-highlight">Username</span>
+                    <input class="form-control" type="name" id="username" name="username" placeholder="Username" value="superuser">
+                </div>
+
+                <div class="row" style="padding-right: 10%; padding-left: 10%;">
+                    <span class="color-highlight">Password</span>
+                    <div class="col-10">
+                        <div class="input-style input-style-1 input-required">
+                            <input class="form-control" type="password" id="password" name="password" placeholder="Password" value="password">
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <a href="javascript:void(0)" onclick="viewPassword();">
+                            <img src="./img/eye.svg" alt="" style="margin-top: 3%;">
+                        </a>
+                    </div>
+                </div>
+
+
+                <div style="padding-right: 10%; padding-left: 10%;">
+                    <div class="row row_button" style="margin-top: 10%;">
+                        <div class="col-12 pl-1 pr-1">
+                            <div class="btn btn-outline-primary" onclick="login()"><b>Accedi</b></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    $("#div_login").hide();
+
+
+    $("#container").append('<br><br><br><br><br><br><div id="div_spinner" class="spinner-grow text-primary" role="status" style=" margin-top: 50%;"><span class="visually-hidden">Caricamento in corso...</span></div>');
+    function onDeviceReady() {
+
+        cordova.getAppVersion.getVersionNumber(function (version) {
+            localStorage.setItem('version', version);
+        });
+        var version_code = localStorage.getItem('version');
+        var version_code = version_code.split(".").join("");
+
+        $.ajax({
+            url: "https://demo.sicare.it/sicare_mobile/icaro-evo/api_" + version_code + "/mobile_icaroevo_action.php?_action=get_listaenti",
+            type: "POST",
+            dataType: "html",
+            contentType: 'text/html',
+            success: function (result) {
+                //console.log(result)
+                var elenco_enti = JSON.parse(result);
+
+                $.each(elenco_enti, function (key, ente) {
+                    $('#idente').append('<option value="' + ente.realm + '">' + ente.realm + '</option>');
+                });
+
+
+                $("#div_spinner").hide();
+                $("#div_select_profili").hide();
+                $("#div_login").show();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+
+
+    }
+
+    $("#idente").change(function () {
+
+        var idente = $("#idente").val()
+        if (idente == 0)
+            $("#div_accesso_credenziali").css("display", 'none');
+        else
+            $("#div_accesso_credenziali").css("display", '');
+
+    })
+
+    function viewPassword() {
+        if ($('#password').get(0).type == 'text')
+            $('#password').get(0).type = 'password';
+        else
+            $('#password').get(0).type = 'text';
+    }
+
+    function login() {
+
+        $("#container").append('<br><br><br><br><br><br><div id="div_spinner_login" class="spinner-grow text-primary" role="status" style=" margin-top: 20%;"><span class="visually-hidden">Caricamento in corso...</span></div>');
+
+        var idente = $("#idente").val()
+        var username = $("#username").val()
+        var password = $("#password").val()
+
+        var details = {
+            'grant_type': 'password',
+            'client_secret': '9cf35845-f09e-4d73-a7f0-048d51bc06a5',
+            'client_id': 'simeal',
+            'username': username,
+            'password': password,
+        };
+
+        var formBody = [];
+        for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+
+        fetch("https://login-dev.maggiolicloud.it/auth/realms/" + idente + "/protocol/openid-connect/token/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody
+        }).then((response) => response.json())
+            .then((responseData) => {
+                var access_token = responseData['access_token'];
+                var refresh_token = responseData['refresh_token'];
+                if (access_token != '' && access_token != null && access_token != undefined) {
+                    $("#div_accesso_credenziali").hide();
+                    $("#select_idente").hide();
+
+                    var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/account-info';
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        xhrFields: { withCredentials: true },
+                        crossDomain: true,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+                        },
+                        success: function (result, textStatus, jqXHR) {
+                            window.cordova.plugins.CookiesPlugin.getCookie(url, (cookies) => {
+
+                                var cookie = cookies;
+                                //localStorage.setItem('Cookie', cookie);
+                                sessionStorage.setItem("Cookie", cookie);
+                                var aCOOKIE = cookie.split(";");
+                                var XSRF_TOKEN = aCOOKIE[0];
+                                
+                                //localStorage.setItem('XSRF-TOKEN', XSRF_TOKEN);
+                                sessionStorage.setItem("XSRF-TOKEN", XSRF_TOKEN);
+                                var aXSRF_TOKEN = XSRF_TOKEN.split("=");
+                                sessionStorage.setItem("X-XSRF-TOKEN", aXSRF_TOKEN[1]);
+
+                                var JSESSIONID = aCOOKIE[1];
+                                //localStorage.setItem('JSESSIONID', JSESSIONID);
+                                sessionStorage.setItem("JSESSIONID", JSESSIONID);
+
+                            });
+
+
+                            var id = result["id"]
+                            var nome = result["nome"]
+                            var cognome = result["cognome"]
+                            var email = result["email"]
+                            var tipoUtente = result["tipoUtente"]
+                            var enti = result["enti"]
+
+                            jQuery.each(enti, function (index, ente) {
+                                var idente = ente.id
+                                var label = ente.label
+                                var servizi = ente.servizi
+
+                                jQuery.each(servizi, function (index, servizio) {
+                                    var id_servizio = servizio.id
+                                    var servizio_label = servizio.label
+                                    $('#idservizio').append('<option value="' + idente + "|" + id_servizio + '">' + servizio_label + '</option>');
+                                });
+                            });
+                        },
+                        error: function () { },
+                    });
+
+                    $("#div_spinner_login").hide();
+                    $("#div_select_profili").show();
+                }
+                else {
+
+                    function alertDismissed() {
+                    }
+
+                    navigator.notification.alert(
+                        'Operatore non presente o credenziali errate',  // message
+                        alertDismissed,         // callback
+                        'Attenzione',            // title
+                        'Chiudi'                  // buttonName
+                    );
+
+                }
+            }).catch(err => {
+                console.log(err)
+            });
+
+        //window.location = "icaro_home.html";
+    }
+
+
+    function continua() {
+
+        var idservizio = $("#idservizio").val()
+        var aSERVIZIO = idservizio.split("|");
+
+        var idente = aSERVIZIO[0];
+        idservizio = aSERVIZIO[1];
+
+        var cookie = sessionStorage.getItem('Cookie');
+        var X_XSRF_TOKEN = sessionStorage.getItem("X-XSRF-TOKEN");
+        //alert(X_XSRF_TOKEN)
+        var JSESSIONID = sessionStorage.getItem('JSESSIONID');
+        var XSRF_TOKEN = sessionStorage.getItem("XSRF-TOKEN");
+
+        var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/authorize';
+
+        var details = {
+            'idEnte': idente,
+            'idServizio': idservizio,
+        };
+
+
+        var formBody = [];
+        for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+
+        formBody = formBody.join("&");
+        $.ajax({
+            url: url,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            xhrFields: { withCredentials: true },
+            crossDomain: true,
+            data: details,
+            headers: {
+                'X-XSRF-TOKEN': X_XSRF_TOKEN,
+                'Cookie': cookie
+                //'JSESSIONID': JSESSIONID+"; Path=/; HttpOnly;",
+                //'XSRF-TOKEN': XSRF_TOKEN+"; Path=/;",
+            },
+            beforeSend: function (request) {
+                request.setRequestHeader("JSESSIONID", JSESSIONID);
+                request.setRequestHeader("XSRF-TOKEN", XSRF_TOKEN);
+                request.setRequestHeader("X-XSRF-TOKEN", X_XSRF_TOKEN);
+            },
+            success: function (data, status, settings) {
+                alert("data: " + data)
+                alert("Status: " + status)
+                alert("settings: " + settings)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("jqXHR: " + jqXHR.responseText)
+
+            }
+        });
+
+        /*
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Cookie': cookie,
+                    'X-XSRF-Token':XSRF_TOKEN
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                body: details
+            }).then(
+                function (response) {
+                
+                    if (response.status !== 200) {
+                        alert('Looks like there was a problem. Status Code: ' +
+                            response.status.);
+                        return;
+                    }
+
+                    // Examine the text in the response
+                    response.text().then(function (data) {
+                        alert(data);
+                    });
+                });
+        */
+    }
+
+
+</script>

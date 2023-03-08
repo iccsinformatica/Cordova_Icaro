@@ -1,0 +1,22 @@
+{
+    "lang": "it",
+    "nome": "Super Racer 2000",
+    "short_name": "Racer2K",
+    "icone": [{
+          "src": "icona/lowres",
+          "dimensioni": "64x64",
+          "tipo": "immagine/webp"
+        }, {
+          "src": "icona/hd_small",
+          "dimensioni": "64x64"
+        }, {
+          "src": "icona/hd_hi",
+          "dimensioni": "128x128",
+          "densità": 2
+        }],
+    "ambito": "/corsa/",
+    "start_url": "index.html",
+    "display": "schermo intero",
+    "orientamento": "paesaggio",
+    "theme_color": "aliceblu"
+  }

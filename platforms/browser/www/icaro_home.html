@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"-->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+        content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover, height=device-height">
+    <meta name="color-scheme" content="light dark">
+
+    <link rel="stylesheet" href="/css/icaro.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <script src="./cordova.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/icaro.js"></script>
+
+    <style>
+        .container {
+            margin: 0% 5% 0% 5%;
+        }
+    </style>
+
+    <title>Icaro Evo</title>
+</head>
+
+<body>
+
+    <div class="div_header" id="div_header_small"></div>
+
+    <div style="margin-top: 18%;" class="fade-in-image">
+        <div class="container_div_home d-flex flex-row">
+            <div>
+                <img src="./img/download.svg">
+            </div>
+            <div style="margin-left:10%;" onclick="scaricaORDINISERVIZIO()">
+                <h6 class="font"><b>Downloads <br>Ordini di servizio</b></h6>
+            </div>
+        </div>
+        <div class="container_div_home d-flex flex-row">
+            <div>
+                <img src="./img/elenco.svg">
+            </div>
+            <div style="margin-left:10%;" onclick="openORDINI()">
+                <h6 class="font"><b>Ordini di servizio</b></h6>
+            </div>
+        </div>
+
+        <div class="container_div_home d-flex flex-row">
+            <div>
+                <img src="./img/card.svg">
+            </div>
+            <div style="margin-left:10%;" onclick="openORDINI()">
+                <h6 class="font"><b>Smarcatura libera</b></h6>
+            </div>
+        </div>
+        <div class="container_div_home d-flex flex-row">
+            <div>
+                <img src="./img/calendar.svg">
+            </div>
+            <div style="margin-left:10%;" onclick="openCALENDAR()">
+                <h6 class="font"><b>Agenda</b></h6>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script>
+     document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+        getHeader();
+    }
+    
+
+    function openORDINI() {
+        window.location = "icaro_ordini_servizio_elenco.html";
+    }
+
+    function openCALENDAR() {
+        window.location = "icaro_agenda.html";
+    }
+
+    function scaricaORDINISERVIZIO() {
+        alert("Scaricare tutti gli ordini a carico di quell'operatore");
+    }
+
+    // onSuccess Callback
+    //   This method accepts a `Position` object, which contains
+    //   the current GPS coordinates
+    //
+    var onSuccess = function (position) {
+        alert('Latitude: ' + position.coords.latitude + '\n' +
+            'Longitude: ' + position.coords.longitude + '\n' +
+            'Altitude: ' + position.coords.altitude + '\n' +
+            'Accuracy: ' + position.coords.accuracy + '\n' +
+            'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' +
+            'Heading: ' + position.coords.heading + '\n' +
+            'Speed: ' + position.coords.speed + '\n' +
+            'Timestamp: ' + position.timestamp + '\n');
+    };
+
+    // onError Callback receives a PositionError object
+    //
+    function onError(error) {
+        alert('code: ' + error.code + '\n' +
+            'message: ' + error.message + '\n');
+    }
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+</script>

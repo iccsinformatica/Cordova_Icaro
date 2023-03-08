@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"-->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+        content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover, height=device-height">
+    <meta name="color-scheme" content="light dark">
+
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/icaro.css">
+
+    <script src="./cordova.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/icaro.js"></script>
+
+    <style>
+        .div_ordineservizio {
+            margin: 5%;
+        }
+
+        .container {
+            width: auto;
+            height: auto;
+            margin: 0 auto;
+
+            position: relative;
+        }
+    </style>
+
+    <title>Icaro Evo</title>
+</head>
+
+<body>
+    <div class="div_header" id="div_header_small"></div>
+    <div class="fade-in-image">
+        <div class="d-flex flex-row" style="position: relative;" id="back" name="back" onclick="back()">
+            <div>
+                <img src="./img/freccia_back.svg">
+            </div>
+            <div class="center">
+                <h6>3 attività</h6>
+            </div>
+        </div>
+        <div class="scroll">
+
+            <div class="container_div_eseguita d-flex flex-row" onclick="openORDINESERVIZIO(1,1)">
+                <div class="container" style="padding-top: 5%;">
+                    <h6 class="font">11:00<br>13:00</h6>
+                </div>
+                <div >
+                    <h6 class="font"><b>Dolce Rosario</b></h6>
+                    <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
+                    <h6 class="font" style="font-size:11px;">Prestazione eseguita</h6>
+                </div>
+                <div class="container" style=" padding-top: 7%;">
+                    <img src="./img/freccia_forward.svg">
+                </div>
+
+            </div>
+
+            <div class="container_div_noneseguita d-flex flex-row" onclick="openORDINESERVIZIO(2,0)">
+                <div class="container" style="padding-top: 5%;">
+                    <h6 class="font">14:00<br>16:00</h6>
+                </div>
+                <div >
+                    <h6 class="font"><b>Pazzelli Danilo</b></h6>
+                    <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
+                    <h6 class="font" style="font-size:11px;">Prestazione non eseguita</h6>
+                </div>
+                <div class="container" style=" padding-top: 7%;">
+                    <img src="./img/freccia_forward.svg">
+                </div>
+
+            </div>
+
+            <div class="container_div_eseguitaparziale d-flex flex-row" onclick="openORDINESERVIZIO(3,2)">
+                <div class="container" style="padding-top: 5%;">
+                    <h6 class="font">18:00<br>21:00</h6>
+                </div>
+                <div >
+                    <h6 class="font"><b>Milani Claudio</b></h6>
+                    <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
+                    <h6 class="font" style="font-size:11px;">Prestazione eseguita parziale</h6>
+                </div>
+                <div class="container" style=" padding-top: 7%;">
+                    <img src="./img/freccia_forward.svg">
+                </div>
+
+            </div>
+
+            <div class="container_div_noneseguita d-flex flex-row" onclick="openORDINESERVIZIO(4,0)">
+                <div class="container" style="padding-top: 5%;">
+                    <h6 class="font">18:00<br>21:00</h6>
+                </div>
+                <div>
+                    <h6 class="font"><b>Milani Claudio</b></h6>
+                    <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
+                    <h6 class="font" style="font-size:11px;">Prestazione non eseguita</h6>
+                </div>
+                <div class="container" style=" padding-top: 7%;">
+                    <img src="./img/freccia_forward.svg">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+        getHeader();
+    }
+
+    function openORDINESERVIZIO(idordineservizio,flag_eseguita) {
+        window.location = "icaro_ordine_servizio_dettaglio.html?_idordineservizio=" + idordineservizio+"&_flag_eseguita="+flag_eseguita;
+    }
+
+    /*
+    - Al primo accesso scaricare tutti gli ordini di servizio e salvarseli in locale
+    - Diario -> ogni pai ha un diario
+    - leggere la tecnologia da utilizzare, dato che deve essere presente nella risposta della request al pai
+    */
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+    function back() {
+        window.location = "icaro_home.html";
+    }
+
+</script>

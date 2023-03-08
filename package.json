@@ -1,0 +1,51 @@
+{
+  "name": "com.iccs.app.icaro",
+  "displayName": "Icaro",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cordova-android": "^10.1.2",
+    "cordova-browser": "^6.0.0",
+    "cordova-nfcv-plugin": "github:valentiniljaz/cordova-nfcv-plugin",
+    "cordova-plugin-advanced-http": "^3.3.1",
+    "cordova-plugin-app-version": "^0.1.14",
+    "cordova-plugin-cookies": "^0.0.2",
+    "cordova-plugin-device": "^2.1.0",
+    "cordova-plugin-dialogs": "^2.0.2",
+    "cordova-plugin-file": "^7.0.0",
+    "cordova-plugin-geolocation": "^4.1.0",
+    "phonegap-nfc": "^1.2.0"
+  },
+  "cordova": {
+    "platforms": [
+      "browser"
+    ],
+    "plugins": {
+      "cordova-plugin-dialogs": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-app-version": {},
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "false"
+      },
+      "phonegap-nfc": {},
+      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-cookies": {}
+    }
+  },
+  "dependencies": {
+    "bootstrap-icons": "^1.10.3",
+    "cordova": "^11.1.0",
+    "cordova-jquery": "^0.1.6",
+    "jquery": "^3.6.3",
+    "js-cookie": "^3.0.1"
+  }
+}

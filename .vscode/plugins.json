@@ -1,0 +1,1 @@
+{"plugins":["cordova-plugin-dialogs","cordova-plugin-device","cordova-plugin-app-version","cordova-plugin-geolocation","phonegap-nfc","cordova-plugin-whitelist","cordova-plugin-network-information","cordova-plugin-advanced-http","cordova-plugin-file","cordova-plugin-cookies"]}

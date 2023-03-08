@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"-->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover, height=device-height">
+  <meta name="color-scheme" content="light dark">
+
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="./css/icaro.css">
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/fontawesome-all.min.css">
+  <link rel="stylesheet" href="./css/fontawesome.css">
+  <link rel="stylesheet" href="./css/fontawesome.min.css">
+
+  <script src="./cordova.js"></script>
+  <script src="./js/index.js"></script>
+  <script src="./js/bootstrap.bundle.min.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/icaro.js"></script>
+
+  <style>
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+  </style>
+
+  <title>Icaro Evo</title>
+</head>
+
+<body>
+  <div class="div_header" id="div_header_small"></div>
+
+
+  <div class="d-flex flex-row" style="position: relative;" id="back" name="back" onclick="back()">
+    <div>
+      <img src="./img/freccia_back.svg">
+    </div>
+  </div>
+
+
+  <div class="fade-in-image" id="div_prestazione_esegui" style="display: none;">
+    <div class=" scroll container_div_noneseguita">
+      <div>
+        <h6 class="font"><b>Pazzelli Danilo</b></h6>
+        <h6 class="font" style="font-size:11px;">Via chiusa, 54</h6>
+        <h6 class="font" style="font-size:11px;">camerino (MC)</h6>
+        <h6 class="font" style="font-size:11px;">333 3333333</h6>
+      </div>
+      <hr>
+      <div>
+        <h6 class="font"><b>Assitenza domiciliare</b></h6>
+        <h6 class="font" style="font-size:11px;">Dalle ore 14:00 alle ore 16:00 </h6>
+        <h6 class="font" style="font-size:11px;">Note:
+          <u>
+            <li>Utente Matto</li>
+          </u>
+        </h6>
+      </div>
+    </div>
+
+    <div class="container_div_home d-flex flex-row" style="margin-top:10%;">
+      <div>
+        <img src="./img/calendar.svg">
+      </div>
+      <div style="margin-left:10%;" onclick="readNFC()">
+        <h6 class="font"><b>Iniza Prestazione</b></h6>
+      </div>
+    </div>
+  </div>
+
+  <div class="fade-in-image" id="div_prestazione_eseguita" style="display: none;">
+    <div class="scroll container_div_eseguita">
+      <h6 class="font">Prestazione eseguita</h6>
+      <hr>
+      <div>
+        <h6 class="font"><b>Dolce Rosario</b></h6>
+        <h6 class="font" style="font-size:11px;">Via sbarrata, 54</h6>
+        <h6 class="font" style="font-size:11px;">Matelica (MC)</h6>
+        <h6 class="font" style="font-size:11px;">333 3333333</h6>
+      </div>
+      <hr>
+      <div>
+        <h6 class="font"><b>Assitenza domiciliare</b></h6>
+        <h6 class="font" style="font-size:11px;">Effettuata dalle ore 11:00 alle ore 13:00</h6>
+        <h6 class="font" style="font-size:11px;">Note:
+          <u>
+            <li>Utente tranquillo</li>
+          </u>
+        </h6>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="fade-in-image" id="div_prestazione_parziale" style="display: none;">
+    <div class="scroll container_div_eseguitaparziale">
+      <h6 class="font">Prestazione eseguita parziale</h6>
+      <hr>
+      <div>
+        <h6 class="font"><b>Dolce Rosario</b></h6>
+        <h6 class="font" style="font-size:11px;">Via sbarrata, 54</h6>
+        <h6 class="font" style="font-size:11px;">Matelica (MC)</h6>
+        <h6 class="font" style="font-size:11px;">333 3333333</h6>
+      </div>
+      <hr>
+      <div>
+        <h6 class="font"><b>Assitenza domiciliare</b></h6>
+        <h6 class="font" style="font-size:11px;">Inizio ore 11:00</h6>
+        <h6 class="font" style="font-size:11px;">Note:
+          <u>
+            <li>Utente tranquillo</li>
+          </u>
+        </h6>
+      </div>
+
+    </div>
+
+    <div class="container_div_home d-flex flex-row" id="btn_chiudi">
+      <div>
+        <img src="./img/calendar.svg">
+      </div>
+      <div style="margin-left:10%;">
+        <h6 class="font"><b>Chiudi prestazione</b></h6>
+      </div>
+    </div>
+  </div>
+
+  <input type="hidden" id="idordine_servizio" name="idordine_servizio" value="">
+
+</body>
+
+</html>
+<script>
+
+
+  let searchParams = new URLSearchParams(window.location.search)
+  var idordineservizio = searchParams.get('_idordineservizio')
+  var flag_eseguita = searchParams.get('_flag_eseguita')
+
+  document.addEventListener("deviceready", onDeviceReady, false);
+
+  function onDeviceReady() {
+    getHeader();
+    //da icaro dovrei ricevere se la prestazione è smarcabile tramite NFC , Tessera sanitaria o QR Code, Solo GPS
+    if (flag_eseguita == 1)
+      $("#div_prestazione_eseguita").removeAttr("style")
+    else if (flag_eseguita == 2)
+      $("#div_prestazione_parziale").removeAttr("style")
+    else
+      $("#div_prestazione_esegui").removeAttr("style")
+
+    $("#idordine_servizio").val(idordineservizio);
+
+  }
+
+  function back() {
+    window.location = "icaro_ordini_servizio_elenco.html";
+  }
+
+  function chiudiprestazione() {
+    alert("QUi deve essere letta la tessera nfc e se valida smarcare la fine ")
+  }
+
+  function readNFC() {
+    nfc.enabled(onSuccess, onFailure);
+  }
+
+  function onFailure() {
+    nfc.showSettings();
+  }
+
+
+  function onSuccess1() {
+    nfc.readerMode(
+      nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS,
+      nfcTag => writedata(nfcTag),
+      error => alert('NFC reader mode failed', error)
+    );
+  }
+
+  function onSuccess() {
+
+    navigator.notification.alert(
+      'Appoggiare la carta delle prestazioni socio-assistenzaili sul retro dello smartphone',
+      read,
+      'Lettura in corso...',
+      ['Annulla']
+    );
+  }
+
+  function read() {
+
+    nfc.readerMode(
+      nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS,
+      nfcTag => writedata(nfcTag),
+      error => alert('NFC reader mode failed', error)
+    );
+  }
+
+  function writedata(nfcTag) {
+    //navigator.notification.dismissPrevious(successCallback, errorCallback)
+
+    var res = JSON.stringify(nfcTag);
+    alert(res)
+
+    res = JSON.parse(res);
+    var dt = new Date();
+    var ora = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+    var data = dt.getFullYear() + " - " + dt.getMonth() + "-" + dt.getDate();
+
+    alert(ora);
+    alert(data);
+
+    //alert(res.type)
+
+    nfc.disableReaderMode(
+      () => console.log('NFC reader mode disabled'),
+      error => console.log('Error disabling NFC reader mode', error)
+    )
+
+  }
+
+  function successCallback() {
+    console.log("Successfully dismissed previously opened dialog.");
+  }
+
+  function errorCallback(error) {
+    console.log("Failed to dismiss previously opened dialog: " + error);
+  }
+
+
+</script>

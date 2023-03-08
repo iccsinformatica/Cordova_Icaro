@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.iccs.app.icaro" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Icaro</name>
+    <description>Sample Apache Cordova App</description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <preference name="phonegap-version" value="cli-9.0.0" />
+    <platform name="android">
+        <feature name="Calendar">
+            <param name="android-package" value="nl.xservices.plugins.Calendar" />
+        </feature>
+        <preference name="android-build-tool" value="gradle" />
+    </platform>
+</widget>
