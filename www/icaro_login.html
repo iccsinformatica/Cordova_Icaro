@@ -238,17 +238,10 @@
                                 var aCOOKIE = cookie.split(";");
                                 var XSRF_TOKEN = aCOOKIE[0];
                                 
-                                //localStorage.setItem('XSRF-TOKEN', XSRF_TOKEN);
-                                sessionStorage.setItem("XSRF-TOKEN", XSRF_TOKEN);
                                 var aXSRF_TOKEN = XSRF_TOKEN.split("=");
                                 sessionStorage.setItem("X-XSRF-TOKEN", aXSRF_TOKEN[1]);
 
-                                var JSESSIONID = aCOOKIE[1];
-                                //localStorage.setItem('JSESSIONID', JSESSIONID);
-                                sessionStorage.setItem("JSESSIONID", JSESSIONID);
-
                             });
-
 
                             var id = result["id"]
                             var nome = result["nome"]
@@ -306,44 +299,28 @@
 
         var cookie = sessionStorage.getItem('Cookie');
         var X_XSRF_TOKEN = sessionStorage.getItem("X-XSRF-TOKEN");
-        //alert(X_XSRF_TOKEN)
-        var JSESSIONID = sessionStorage.getItem('JSESSIONID');
-        var XSRF_TOKEN = sessionStorage.getItem("XSRF-TOKEN");
-
+        
         var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/authorize';
 
         var details = {
             'idEnte': idente,
             'idServizio': idservizio,
         };
- 
+        var aDETAILS = JSON.stringify(details);
 
-        var formBody = [];
-        for (var property in details) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(details[property]);
-            formBody.push(encodedKey + "=" + encodedValue);
-        }
+        //cookie="JSESSIONID="+JSESSIONID+"; XSRF-TOKEN="+XSRF_TOKEN;
 
-        formBody = formBody.join("&");
         $.ajax({
             url: url,
             type: "POST",
             contentType: "application/json; charset=utf-8",
-            dataType: "json",
+            dataType: "application/json",
             xhrFields: { withCredentials: true },
             crossDomain: true,
-            data: details,
-            headers: {
-                'X-XSRF-TOKEN': X_XSRF_TOKEN,
-                'Cookie': cookie
-                //'JSESSIONID': JSESSIONID+"; Path=/; HttpOnly;",
-                //'XSRF-TOKEN': XSRF_TOKEN+"; Path=/;",
-            },
+            data: aDETAILS,
             beforeSend: function (request) {
-                request.setRequestHeader("JSESSIONID", JSESSIONID);
-                request.setRequestHeader("XSRF-TOKEN", XSRF_TOKEN);
-                request.setRequestHeader("X-XSRF-TOKEN", X_XSRF_TOKEN);
+                request.setRequestHeader("Cookie", cookie);
+                request.setRequestHeader("X-XSRF-Token", X_XSRF_TOKEN);
             },
             success: function (data, status, settings) {
                 alert("data: " + data)
