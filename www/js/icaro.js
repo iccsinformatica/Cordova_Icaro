@@ -102,18 +102,89 @@ function isiOS() {
     return (isiPhone() || isiPad());
 }
 function isiPhone() {
-    var success=false;
+    var success = false;
 
-    if(device.model.indexOf("iPhone") != -1)
-        success=true;
+    if (device.model.indexOf("iPhone") != -1)
+        success = true;
 
     return success;
 }
 function isiPad() {
-    var success=false;
+    var success = false;
 
-    if(device.model.indexOf("iPad") != -1)
-        success=true;
+    if (device.model.indexOf("iPad") != -1)
+        success = true;
 
     return success;
+}
+
+function refresh_token() {
+    var refresh_token = localStorage.getItem('refresh_token');
+    var details = {
+        'grant_type': 'refresh_token',
+        'client_secret': '9cf35845-f09e-4d73-a7f0-048d51bc06a5',
+        'client_id': 'simeal',
+        'refresh_token': refresh_token,
+    };
+
+
+    var formBody = [];
+    for (var property in details) {
+        var encodedKey = encodeURIComponent(property);
+        var encodedValue = encodeURIComponent(details[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+    fetch("https://login-dev.maggiolicloud.it/auth/realms/" + realms + "/protocol/openid-connect/token/", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: formBody
+    }).then((response) => response.json())
+        .then((responseData) => {
+            var access_token = responseData['access_token'];
+            var refresh_token = responseData['refresh_token'];
+            localStorage.setItem('refresh_token', refresh_token);
+
+            if (access_token != '' && access_token != null && access_token != undefined) {
+
+                var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/account-info';
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    xhrFields: { withCredentials: true },
+                    crossDomain: true,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+                    },
+                    success: function (result, textStatus, jqXHR) {
+                        localStorage.removeItem('Cookie');
+                        localStorage.removeItem('X-XSRF-TOKEN');
+
+                        window.cordova.plugins.CookiesPlugin.getCookie(url, (cookies) => {
+
+                            var cookie = cookies;
+                            localStorage.setItem('Cookie', cookie);
+                            var aCOOKIE = cookie.split(";");
+                            var XSRF_TOKEN = aCOOKIE[0];
+
+                            var aXSRF_TOKEN = XSRF_TOKEN.split("=");
+                            localStorage.setItem("X-XSRF-TOKEN", aXSRF_TOKEN[1]);
+
+                        });
+
+                    },
+                    error: function () { },
+                });
+
+            }
+            else {
+                console.log("Access token empty");
+            }
+        }).catch(err => {
+            console.log(err)
+        });
+
 }

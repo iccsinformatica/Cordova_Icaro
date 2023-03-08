@@ -65,9 +65,9 @@
             <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="div_select_profili"
                 name="div_select_profili">
 
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idservizio"
-                    name="idservizio">
-                    <option value="0" selected>Seleziona il servizio</option>
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idstruttura"
+                    name="idstruttura">
+                    <option value="0" selected>Seleziona la struttura</option>
                 </select>
                 <div style="padding-right: 10%; padding-left: 10%;">
                     <div class="row row_button" style="margin-top: 10%;">
@@ -77,10 +77,10 @@
                     </div>
                 </div>
             </div>
-            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="select_idente"
-                name="select_idente">
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idente"
-                    name="idente">
+            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="select_realms"
+                name="select_realms">
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="realms"
+                    name="realms">
                     <option value="0" selected>Seleziona l'ambito</option>
                 </select>
             </div>
@@ -89,14 +89,16 @@
                 <br>
                 <div class="input-style input-style-1 input-required" style=" padding-left: 10%; padding-right: 10%;">
                     <span class="color-highlight">Username</span>
-                    <input class="form-control" type="name" id="username" name="username" placeholder="Username" value="">
+                    <input class="form-control" type="name" id="username" name="username" placeholder="Username"
+                        value="struttura">
                 </div>
 
                 <div class="row" style="padding-right: 10%; padding-left: 10%;">
                     <span class="color-highlight">Password</span>
                     <div class="col-10">
                         <div class="input-style input-style-1 input-required">
-                            <input class="form-control" type="password" id="password" name="password" placeholder="Password" value="">
+                            <input class="form-control" type="password" id="password" name="password"
+                                placeholder="Password" value="password">
                         </div>
                     </div>
 
@@ -117,8 +119,18 @@
                 </div>
 
 
+
+
+            </div>
+            <div style="padding-right: 10%; padding-left: 10%;">
+                <div class="row row_button" style="margin-top: 10%;">
+                    <div class="col-12 pl-1 pr-1">
+                        <div class="btn btn-outline-primary" onclick="refresh()"><b>refresh</b></div>
+                    </div>
+                </div>
             </div>
         </div>
+        <input type="hidden" id="idente" name="idente" value="">
 </body>
 
 </html>
@@ -148,7 +160,7 @@
                 var elenco_enti = JSON.parse(result);
 
                 $.each(elenco_enti, function (key, ente) {
-                    $('#idente').append('<option value="' + ente.realm + '">' + ente.realm + '</option>');
+                    $('#realms').append('<option value="' + ente.realm + '">' + ente.realm + '</option>');
                 });
 
 
@@ -165,10 +177,10 @@
 
     }
 
-    $("#idente").change(function () {
+    $("#realms").change(function () {
 
-        var idente = $("#idente").val()
-        if (idente == 0)
+        var realms = $("#realms").val()
+        if (realms == 0)
             $("#div_accesso_credenziali").css("display", 'none');
         else
             $("#div_accesso_credenziali").css("display", '');
@@ -184,9 +196,12 @@
 
     function login() {
 
+        localStorage.removeItem('Cookie');
+        localStorage.removeItem('X-XSRF-TOKEN');
+
         $("#container").append('<br><br><br><br><br><br><div id="div_spinner_login" class="spinner-grow text-primary" role="status" style=" margin-top: 20%;"><span class="visually-hidden">Caricamento in corso...</span></div>');
 
-        var idente = $("#idente").val()
+        var realms = $("#realms").val()
         var username = $("#username").val()
         var password = $("#password").val()
 
@@ -206,7 +221,8 @@
         }
         formBody = formBody.join("&");
 
-        fetch("https://login-dev.maggiolicloud.it/auth/realms/" + idente + "/protocol/openid-connect/token/", {
+
+        fetch("https://login-dev.maggiolicloud.it/auth/realms/" + realms + "/protocol/openid-connect/token/", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -216,9 +232,11 @@
             .then((responseData) => {
                 var access_token = responseData['access_token'];
                 var refresh_token = responseData['refresh_token'];
+                localStorage.setItem('refresh_token', refresh_token);
+
                 if (access_token != '' && access_token != null && access_token != undefined) {
                     $("#div_accesso_credenziali").hide();
-                    $("#select_idente").hide();
+                    $("#select_realms").hide();
 
                     var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/account-info';
                     $.ajax({
@@ -233,13 +251,12 @@
                             window.cordova.plugins.CookiesPlugin.getCookie(url, (cookies) => {
 
                                 var cookie = cookies;
-                                //localStorage.setItem('Cookie', cookie);
-                                sessionStorage.setItem("Cookie", cookie);
+                                localStorage.setItem('Cookie', cookie);
                                 var aCOOKIE = cookie.split(";");
                                 var XSRF_TOKEN = aCOOKIE[0];
-                                
+
                                 var aXSRF_TOKEN = XSRF_TOKEN.split("=");
-                                sessionStorage.setItem("X-XSRF-TOKEN", aXSRF_TOKEN[1]);
+                                localStorage.setItem("X-XSRF-TOKEN", aXSRF_TOKEN[1]);
 
                             });
 
@@ -253,12 +270,15 @@
                             jQuery.each(enti, function (index, ente) {
                                 var idente = ente.id
                                 var label = ente.label
-                                var servizi = ente.servizi
+                                var strutture = ente.strutture
 
-                                jQuery.each(servizi, function (index, servizio) {
-                                    var id_servizio = servizio.id
-                                    var servizio_label = servizio.label
-                                    $('#idservizio').append('<option value="' + idente + "|" + id_servizio + '">' + servizio_label + '</option>');
+                                jQuery.each(strutture, function (index, struttura) {
+                                    var id_struttura = struttura.id
+                                    var struttura_label = struttura.label
+
+                                    $("#idente").val(idente)
+
+                                    $('#idstruttura').append('<option value="' + id_struttura + '">' + struttura_label + '</option>');
                                 });
                             });
                         },
@@ -285,81 +305,90 @@
                 console.log(err)
             });
 
-        //window.location = "icaro_home.html";
+
     }
 
 
     function continua() {
 
-        var idservizio = $("#idservizio").val()
-        var aSERVIZIO = idservizio.split("|");
+        var idstruttura = $("#idstruttura").val()
+        if (idstruttura != 0) {
+            var idente = $("#idente").val()
 
-        var idente = aSERVIZIO[0];
-        idservizio = aSERVIZIO[1];
+            localStorage.setItem("idstruttura", idstruttura);
+            localStorage.setItem("idente", idente);
 
-        var cookie = sessionStorage.getItem('Cookie');
-        var X_XSRF_TOKEN = sessionStorage.getItem("X-XSRF-TOKEN");
-        
-        var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/authorize';
+            var cookie = localStorage.getItem('Cookie');
+            var X_XSRF_TOKEN = localStorage.getItem("X-XSRF-TOKEN");
 
-        var details = {
-            'idEnte': idente,
-            'idServizio': idservizio,
-        };
-        var aDETAILS = JSON.stringify(details);
+            var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/authorize';
 
-        $.ajax({
-            url: url,
-            type: "POST",
-            contentType: "application/json; charset=utf-8",
-            dataType: "application/json",
-            xhrFields: { withCredentials: true },
-            crossDomain: true,
-            data: aDETAILS,
-            beforeSend: function (request) {
-                request.setRequestHeader("Cookie", cookie);
-                request.setRequestHeader("X-XSRF-Token", X_XSRF_TOKEN);
-            },
-            success: function (data, status, settings) {
-                alert("data: " + data)
-                alert("Status: " + status)
-                alert("settings: " + settings)
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert("jqXHR: " + jqXHR.responseText)
+            var details = {
+                'idEnte': idente,
+                'idStruttura': idstruttura,
+            };
+            var aDETAILS = JSON.stringify(details);
 
-            }
-        });
-
-        /*
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
-                    'Cookie': cookie,
-                    'X-XSRF-Token':XSRF_TOKEN
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                xhrFields: { withCredentials: true },
+                data: aDETAILS,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Cookie", cookie);
+                    request.setRequestHeader("X-XSRF-Token", X_XSRF_TOKEN);
                 },
-                xhrFields: {
-                    withCredentials: true
-                },
-                crossDomain: true,
-                body: details
-            }).then(
-                function (response) {
-                
-                    if (response.status !== 200) {
-                        alert('Looks like there was a problem. Status Code: ' +
-                            response.status.);
-                        return;
-                    }
+                success: function (data, status, settings) {
 
-                    // Examine the text in the response
-                    response.text().then(function (data) {
-                        alert(data);
+                    var aUTENTE=data.utente
+                    var aENTE=data.ente
+                    var aSTRUTTURA=data.struttura
+                    var aPERMESSI=JSON.stringify(data.permessi)
+                   
+                    localStorage.setItem("descrizione_struttura", aSTRUTTURA['label']);
+                    localStorage.setItem("permessi", aPERMESSI);
+
+                    var array=localStorage.getItem('permessi');
+                    //alert(array)
+                    jQuery.each(array, function (index, permesso) {
+                        jQuery.each(array, function (index, element) {
+                            alert(element.nome)
+                        });
                     });
-                });
-        */
+
+                   
+                    //window.location = "icaro_home.html";
+                    
+                  
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("ERRORE: " + jqXHR.responseText)
+
+                }
+            });
+        }
+        else
+        {
+            function alertDismissed() {
+            }
+
+            navigator.notification.alert(
+                'Selezionare una struttura',  // message
+                alertDismissed,         // callback
+                'Attenzione',            // title
+                'Chiudi'                  // buttonName
+            );
+        }
     }
+ 
+    function refresh() {
+        var cookie = localStorage.getItem('Cookie');
+        var X_XSRF_Token = localStorage.getItem('X-XSRF-Token');
+        alert(cookie)
+        alert(X_XSRF_Token)
+        
 
-
+    }
 </script>
