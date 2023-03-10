@@ -62,12 +62,29 @@
                 <img style="width: 20%;" src="./img/logo_maggioli.png" alt="">
             </div>
 
-            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="div_select_profili"
-                name="div_select_profili">
+            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="select_realms"
+                name="select_realms">
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="realms"
+                    name="realms">
+                    <option value="0" selected>Seleziona l'ambito</option>
+                </select>
+            </div>
+
+            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="div_select_struttura"
+                name="div_select_struttura">
 
                 <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idstruttura"
-                    name="idstruttura">
+                    name="idstruttura" onchange="getSERVIZI(this.value)">
                     <option value="0" selected>Seleziona la struttura</option>
+                </select>
+            </div>
+
+            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="div_select_servizi"
+                name="div_select_servizi">
+
+                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="idservizio"
+                    name="idservizio">
+                    <option value="0" selected>Seleziona il servizio</option>
                 </select>
                 <div style="padding-right: 10%; padding-left: 10%;">
                     <div class="row row_button" style="margin-top: 10%;">
@@ -76,13 +93,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div style="padding-left: 10%; padding-right: 10%; margin-top: 10%;" id="select_realms"
-                name="select_realms">
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="realms"
-                    name="realms">
-                    <option value="0" selected>Seleziona l'ambito</option>
-                </select>
             </div>
 
             <div id="div_accesso_credenziali" style="display: none;">
@@ -122,13 +132,7 @@
 
 
             </div>
-            <div style="padding-right: 10%; padding-left: 10%;">
-                <div class="row row_button" style="margin-top: 10%;">
-                    <div class="col-12 pl-1 pr-1">
-                        <div class="btn btn-outline-primary" onclick="refresh()"><b>refresh</b></div>
-                    </div>
-                </div>
-            </div>
+
         </div>
         <input type="hidden" id="idente" name="idente" value="">
 </body>
@@ -165,7 +169,8 @@
 
 
                 $("#div_spinner").hide();
-                $("#div_select_profili").hide();
+                $("#div_select_struttura").hide();
+                $("#div_select_servizi").hide();
                 $("#div_login").show();
 
             },
@@ -286,7 +291,7 @@
                     });
 
                     $("#div_spinner_login").hide();
-                    $("#div_select_profili").show();
+                    $("#div_select_struttura").show();
                 }
                 else {
 
@@ -309,9 +314,9 @@
     }
 
 
-    function continua() {
+    function getSERVIZI(idstruttura) {
 
-        var idstruttura = $("#idstruttura").val()
+        //var idstruttura = $("#idstruttura").val()
         if (idstruttura != 0) {
             var idente = $("#idente").val()
 
@@ -320,6 +325,9 @@
 
             var cookie = localStorage.getItem('Cookie');
             var X_XSRF_TOKEN = localStorage.getItem("X-XSRF-TOKEN");
+
+            //alert("Cookie PRIMA: "+cookie);
+            //alert("X_XSRF_Token PRIMA: "+localStorage.getItem("X-XSRF-TOKEN"));
 
             var url = 'https://gateway.icaro-dev.maggioli.cloud/services/autorizzazioniservice/api/authorize';
 
@@ -342,20 +350,49 @@
                 },
                 success: function (data, status, settings) {
 
-                    var aUTENTE=data.utente
-                    var aENTE=data.ente
-                    var aSTRUTTURA=data.struttura
-                    var aPERMESSI=JSON.stringify(data.permessi)
-                   
-                    localStorage.setItem("descrizione_struttura", aSTRUTTURA['label']);
-                    localStorage.setItem("permessi", aPERMESSI);
+                    var aUTENTE = data.utente
+                    var nome = aUTENTE["nome"]
+                    var cognome = aUTENTE["cognome"]
+                    localStorage.setItem("nome_operatore", nome);
+                    localStorage.setItem("cognome_operatore", cognome);
 
-                    var array=localStorage.getItem('permessi');
-                  
-                   
-                    //window.location = "icaro_home.html";
-                    
-                  
+                    var aENTE = data.ente
+                    var aSTRUTTURA = data.struttura
+                    var aPERMESSI = data.permessi
+
+                    localStorage.setItem("descrizione_struttura", aSTRUTTURA['label']);
+
+                    var url = 'https://gateway.icaro-dev.maggioli.cloud/services/interventiservice/api/tipi-intervento-servizi/ricerca/servizi/' + idstruttura;
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        xhrFields: { withCredentials: true },
+                        crossDomain: true,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Cookie', cookie);
+                        },
+                        success: function (data, status, settings) {
+
+                            jQuery.each(data, function (index, servizi) {
+                                $('#idservizio').append('<option value="' + servizi.id + '">' + servizi.denominazione + '</option>');
+                            });
+                            $("#div_select_servizi").show();
+
+                            /*
+                            alert("SUCCESS")
+                            alert(data)
+                            alert(status)
+                            alert(settings)
+                            */
+                            //window.location = "icaro_home.html";
+
+
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("ERRORE STRUTTURA: " + jqXHR.responseText)
+
+                        }
+                    });
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("ERRORE: " + jqXHR.responseText)
@@ -363,8 +400,7 @@
                 }
             });
         }
-        else
-        {
+        else {
             function alertDismissed() {
             }
 
@@ -376,13 +412,26 @@
             );
         }
     }
- 
-    function refresh() {
-        var cookie = localStorage.getItem('Cookie');
-        var X_XSRF_Token = localStorage.getItem('X-XSRF-Token');
-        alert(cookie)
-        alert(X_XSRF_Token)
-        
 
+    function continua() {
+        var idstruttura = $("#idstruttura").val()
+        var idservizio = $("#idservizio").val()
+        if (idservizio != 0) {
+            localStorage.setItem("idservizio", idservizio);
+            window.location = "icaro_home.html";
+
+        }
+        else {
+            function alertDismissed() {
+            }
+
+            navigator.notification.alert(
+                'Selezionare una tipologia di servizio',  // message
+                alertDismissed,         // callback
+                'Attenzione',            // title
+                'Chiudi'                  // buttonName
+            );
+        }
     }
+
 </script>

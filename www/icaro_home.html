@@ -68,18 +68,22 @@
                 <h6 class="font"><b>Agenda</b></h6>
             </div>
         </div>
+       
     </div>
+
 
 </body>
 
 </html>
 <script>
-     document.addEventListener("deviceready", onDeviceReady, false);
+    document.addEventListener("deviceready", onDeviceReady, false);
+    $("#container").append('<br><br><br><br><br><br><div id="div_spinner" class="spinner-grow text-primary" role="status" style=" margin-top: 50%;"><span class="visually-hidden">Caricamento in corso...</span></div>');
 
     function onDeviceReady() {
         getHeader();
+        $("#div_spinner").hide();
     }
-    
+
 
     function openORDINI() {
         window.location = "icaro_ordini_servizio_elenco.html";
@@ -116,4 +120,6 @@
     }
 
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+
 </script>

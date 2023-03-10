@@ -29,8 +29,12 @@ function getDate() {
 
 function getHeader() {
 
-    var dettaglio = "ICARO EVO ";
-    var nominativo = "Milani Claudio";
+    var nome_operatore = localStorage.getItem('nome_operatore');
+    var cognome_operatore = localStorage.getItem('cognome_operatore');
+    var descrizione_struttura = localStorage.getItem('descrizione_struttura');
+
+    var dettaglio = descrizione_struttura;
+    var nominativo = cognome_operatore+" "+ nome_operatore;
 
     //var descrizione=getLocal("descrizione");
     var device_model = getLocal("device_model");
@@ -50,7 +54,7 @@ function getHeader() {
             <div class="d-flex flex-row " style="margin-left:10%;"  >\
                 <img id="logo" name="logo" src="./img/person.svg" "/>\
                 <div style="width:50%; margin-left:5%;>\
-                    <h6 style="font-family: Verdana; margin-top:5%; margin-left:5%;" class="style-text"><b>Data: '+ getDate() + '<br>' + nominativo + '</b></h6>\
+                    <h6 style="font-family: Verdana; margin-top:5%; margin-left:5%;" class="style-text"><b>'+dettaglio+'<br>Data: '+ getDate() + '<br>' + nominativo + '</b></h6>\
                 </div>\
             </div>';
     }// <div style="width: 20%; margin-right:5%; ">\<button type="button" class="btn btn-warning" onclick="logout();">\Logout\</button>\</div>\
@@ -118,6 +122,98 @@ function isiPad() {
     return success;
 }
 
+function getDATAFORCALL()
+{
+    var currentdate = new Date(); 
+    var month='';
+    switch ((currentdate.getMonth()+1)) {
+        case 1:
+            month="01";
+            break;
+        case 2:
+            month="02";
+            break;
+        case 3:
+            month="03";
+            break;
+        case 4:
+            month="04";
+            break;
+        case 5:
+            month="05";
+            break;
+        case 6:
+            month="06";
+            break;
+        case 7:
+            month="07";
+            break;
+        case 8:
+            month="08";
+            break;
+        case 8:
+            month="09";
+        break;
+
+        default:
+            break;
+    }
+    var datetime=currentdate.getFullYear()+"-"+month
+    //var datetime = "Now: " + currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/"+ currentdate.getFullYear() + " @ "+ currentdate.getHours() + ":"+ currentdate.getMinutes() + ":"  + currentdate.getSeconds();
+
+    return datetime;
+}
+
+function getDATA()
+{
+    var currentdate = new Date(); 
+    var month='';
+    switch ((currentdate.getMonth()+1)) {
+        case 1:
+            month="01";
+            break;
+        case 2:
+            month="02";
+            break;
+        case 3:
+            month="03";
+            break;
+        case 4:
+            month="04";
+            break;
+        case 5:
+            month="05";
+            break;
+        case 6:
+            month="06";
+            break;
+        case 7:
+            month="07";
+            break;
+        case 8:
+            month="08";
+            break;
+        case 8:
+            month="09";
+        break;
+
+        default:
+            break;
+    }
+    var datetime=currentdate.getFullYear()+"-"+month + currentdate.getFullYear()
+    //var datetime = "Now: " + currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/"+ currentdate.getFullYear() + " @ "+ currentdate.getHours() + ":"+ currentdate.getMinutes() + ":"  + currentdate.getSeconds();
+
+    return datetime;
+}
+
+function getTIME()
+{
+    var currentdate = new Date(); 
+    var time=currentdate.getHours()+":"+currentdate.getMinutes()+":"+currentdate.getSeconds()
+   
+    return time;
+}
+/*
 function refresh_token() {
     var refresh_token = localStorage.getItem('refresh_token');
     var details = {
@@ -171,6 +267,7 @@ function refresh_token() {
                             var XSRF_TOKEN = aCOOKIE[0];
 
                             var aXSRF_TOKEN = XSRF_TOKEN.split("=");
+                           
                             localStorage.setItem("X-XSRF-TOKEN", aXSRF_TOKEN[1]);
 
                         });
@@ -188,3 +285,4 @@ function refresh_token() {
         });
 
 }
+*/

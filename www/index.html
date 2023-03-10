@@ -68,14 +68,17 @@
         var device_id = localStorage.getItem("device_id");
         var device_model = localStorage.getItem("device_model");
 
-        alert(device_platform)
-        alert(device_id)
-        alert(device_model)
+        var cookie = localStorage.getItem('Cookie');
+      
         
-
+        if(cookie=='' || cookie==null)
+            window.location = "icaro_login.html";
+        else
+            window.location = "icaro_home.html";
+       
+        
     }
 
-    window.location = "icaro_login.html";
-    //window.location = "icaro_home.html";
+   
 
 </script>

@@ -45,17 +45,20 @@
             <div>
                 <img src="./img/freccia_back.svg">
             </div>
-            <div class="center">
-                <h6>3 attività</h6>
+            <div class="center" id="div_numero_element" name="div_numero_element">
             </div>
         </div>
-        <div class="scroll">
+        <div class="scroll" id="div_container" name="div_container">
+            <div class="scroll" id="div_container_sub" name="div_container_sub">
 
-            <div class="container_div_eseguita d-flex flex-row" onclick="openORDINESERVIZIO(1,1)">
+
+            </div>
+
+            <!--div class="container_div_eseguita d-flex flex-row" onclick="openORDINESERVIZIO(1,1)">
                 <div class="container" style="padding-top: 5%;">
                     <h6 class="font">11:00<br>13:00</h6>
                 </div>
-                <div >
+                <div>
                     <h6 class="font"><b>Dolce Rosario</b></h6>
                     <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
                     <h6 class="font" style="font-size:11px;">Prestazione eseguita</h6>
@@ -70,7 +73,7 @@
                 <div class="container" style="padding-top: 5%;">
                     <h6 class="font">14:00<br>16:00</h6>
                 </div>
-                <div >
+                <div>
                     <h6 class="font"><b>Pazzelli Danilo</b></h6>
                     <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
                     <h6 class="font" style="font-size:11px;">Prestazione non eseguita</h6>
@@ -85,7 +88,7 @@
                 <div class="container" style="padding-top: 5%;">
                     <h6 class="font">18:00<br>21:00</h6>
                 </div>
-                <div >
+                <div>
                     <h6 class="font"><b>Milani Claudio</b></h6>
                     <h6 class="font" style="font-size:11px;">Assistenza domiciliare</h6>
                     <h6 class="font" style="font-size:11px;">Prestazione eseguita parziale</h6>
@@ -109,7 +112,7 @@
                     <img src="./img/freccia_forward.svg">
                 </div>
 
-            </div>
+            </div-->
         </div>
     </div>
 </body>
@@ -119,11 +122,129 @@
     document.addEventListener("deviceready", onDeviceReady, false);
 
     function onDeviceReady() {
+
         getHeader();
+
+        $("#div_container").append('<div id="div_spinner" class="spinner-grow text-primary" role="status" style=" margin-left: 50%; margin-top: 50%;"><span class="visually-hidden">Caricamento in corso...</span></div>');
+
+        //var oggi=getDATA();
+        var oggi = '2023-03-08';
+        var string = '';
+        var counter_prestazioni=0;
+
+        var data_forcall = getDATAFORCALL();
+        var idservizio = localStorage.getItem('idservizio');
+        var cookie = localStorage.getItem('Cookie');
+
+        var url = 'https://gateway.icaro-dev.maggioli.cloud/services/interventiservice/api/erogazioni/ricerca?meseRiferimento=' + data_forcall + '&servizioId.equals=' + idservizio;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            xhrFields: { withCredentials: true },
+            crossDomain: true,
+            dataType: 'json',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Cookie', cookie);
+            },
+            success: function (result, textStatus, jqXHR) {
+                //$("#div_numero_element").append(' <h6 id="numero_element" name="numero_element">' + result.totalElements + ' attività</h6>');
+                var content = result.content
+                jQuery.each(content, function (index, element) {
+                    var checkDataAccessSysdate = element.checkDataAccessSysdate
+                    var id = element.id
+                    var codice = element.codice
+                    var codiceServizio = element.codiceServizio
+                    var idTipoIntervento = element.idTipoIntervento
+                    var tipoIntervento = element.tipoIntervento
+                    var dataInizio = element.dataInizio
+                    var dataFine = element.dataFine
+                    var soggetto = element.soggetto
+                    var editabile = element.editabile
+                    var idErogatore = element.idErogatore
+                    var denominazioneErogatore = element.denominazioneErogatore
+                    var certificazioneAccessi = element.certificazioneAccessi
+                    var aEROGAZIONI = element.erogazioni
+
+                    jQuery.each(aEROGAZIONI, function (index, erogazione) {
+
+                        var data_prestazione = index;
+                        var idAccesso = erogazione["idAccesso"]
+                        var statoValidazione = erogazione["statoValidazione"]
+                        var aPRESTAZIONI = erogazione["prestazioni"]
+
+                        jQuery.each(aPRESTAZIONI, function (index, prestazione) {
+                           
+                            if (oggi == data_prestazione) {
+                                var idPrestazione = prestazione["idPrestazione"]
+                                var labelGruppoPrestazioni = prestazione["labelGruppoPrestazioni"]
+                                var coloreGruppoPrestazioni = prestazione["coloreGruppoPrestazioni"]
+                                var tipoPrestazione = prestazione["tipoPrestazione"]
+                                var quantita = prestazione["quantita"]
+                                var oraInizio = prestazione["oraInizio"]
+                                var oraFine = prestazione["oraFine"]
+                                var erogata = prestazione["erogata"]
+                                var fatturabile = prestazione["fatturabile"]
+                                var durata = prestazione["durata"]
+                                var class_div = '';
+                                var descr_prestazione = '';
+                                var flag_eseguita = 0;
+                                var h6hour = '';
+                                if (oraInizio == null) {
+                                    class_div = "noneseguita";
+                                    descr_prestazione = 'Prestazione non eseguita';
+                                    flag_eseguita = 0;
+
+                                }
+                                else if (oraFine == null) {
+                                    class_div = "eseguitaparziale";
+                                    descr_prestazione = 'Prestazione eseguita parziale';
+                                    flag_eseguita = 2;
+                                    h6hour = '<h6 class="font">' + oraInizio + '<br></h6>'
+
+                                }
+                                else {
+                                    class_div = "eseguita";
+                                    descr_prestazione = 'Prestazione eseguita';
+                                    flag_eseguita = 1;
+                                    h6hour = '<h6 class="font">' + oraInizio + '<br>' + oraFine + '</h6>'
+
+                                }
+
+
+                                $("#div_container_sub").append('<div class="container_div ' + class_div + ' d-flex flex-row" onclick="openORDINESERVIZIO(\'' + idPrestazione + '\',' + flag_eseguita + ')">\
+                                            <div class="container" style="padding-top: 5%;">\
+                                                '+ h6hour + '\
+                                            </div>\
+                                            <div>\
+                                                <h6 class="font"><b>'+ soggetto + '</b></h6>\
+                                                <h6 class="font" style="font-size:11px;">'+ tipoPrestazione + '</h6>\
+                                                <h6 class="font" style="font-size:11px;">'+ descr_prestazione + '</h6>\
+                                            </div>\
+                                            <div class="container" style=" padding-top: 7%;">\
+                                                <img src="./img/freccia_forward.svg">\
+                                            </div>\
+                                        </div>');
+
+                                    counter_prestazioni++
+                            }
+                        });
+                    });
+                });
+                $("#div_numero_element").append(' <h6 id="numero_element" name="numero_element">' + counter_prestazioni + ' attività</h6>');
+
+                $("#div_spinner").hide();
+
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.responseText)
+            }
+        });
+      
     }
 
-    function openORDINESERVIZIO(idordineservizio,flag_eseguita) {
-        window.location = "icaro_ordine_servizio_dettaglio.html?_idordineservizio=" + idordineservizio+"&_flag_eseguita="+flag_eseguita;
+    function openORDINESERVIZIO(idordineservizio, flag_eseguita) {
+        window.location = "icaro_ordine_servizio_dettaglio.html?_idordineservizio=" + idordineservizio + "&_flag_eseguita=" + flag_eseguita;
     }
 
     /*
